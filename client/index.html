@@ -36,16 +36,21 @@
         e.stopPropagation();
         var message = $('input.textBox').val();
         send(message);
+        fetch($('select').val());
         $('input.textBox').val("");
       });
       $('select').on('change', function(e){
         e.preventDefault();
         e.stopPropagation();
-        // $('select').append('')
+        // debugger;
+        fetch($('select').val());
+        //filter chat box to specified chat room
+        // fetch(display, $('select').val());
       });
       $('.roomSubmit').on('click', function(e){
         e.preventDefault();
         e.stopPropagation();
+        //add chat room to list
         var text = $('input.roomInput').val();
         $('select').append('<option>'+text+'</option');
         $('.roomInput').val("");
