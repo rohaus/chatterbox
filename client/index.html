@@ -16,18 +16,39 @@
 
     <div id="main">
       <h1>Chat-Client</h1>
-      <section class="chatbox"></section>
+      <section class="chatbox left"></section>
       <form>
         <input class="textBox" type="text"></input>
         <button class="send">Send Message</button>
       </form>
     </div>
-
+    <nav class='right'>
+      <form>
+        <input class='roomInput' type='text'></input>
+        <button class='roomSubmit'></button>
+        <select></select>
+      </form>
+    </nav>
   <script>
     $(document).ready(function(){
-      $('button').on('click', '.send', function(){
-        send($('input.textBox').text());
-        $('input.textBox').text("");
+      $('.send').on('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var message = $('input.textBox').val();
+        send(message);
+        $('input.textBox').val("");
+      });
+      $('select').on('change', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        // $('select').append('')
+      });
+      $('.roomSubmit').on('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var text = $('input.roomInput').val();
+        $('select').append('<option>'+text+'</option');
+        $('.roomInput').val("");
       })
     });
   </script>
