@@ -13,12 +13,6 @@ var secure = function(key){
             .replace("/", "&#x2F;");
 }
 
-var filterMessages = function(className){
-  // debugger;
-  $('.message').css({'display':'none'});
-  $('.message').filter('.'+className).css({'display':'block'});
-};
-
 var updateRooms = function(roomName){
   $('select').text('');
   for(var room in rooms){
@@ -34,7 +28,6 @@ var updateRooms = function(roomName){
 var display = function(messages, filter){
   var list, option, results = messages.results;
   $('.chatbox').text('');
-  // debugger;
   for(var i = results.length-1 ; i >= results.length - 50; i--){
     var message = results[i];
     message.username = secure(message.username) || username;
@@ -45,7 +38,8 @@ var display = function(messages, filter){
     $('.chatbox').append(list);
   }
   updateRooms(filter);
-  filterMessages(filter);
+  $('.message').css({'display':'none'});
+  $('.message').filter('.'+filter).css({'display':'block'});
 };
 
 var fetch = function(filter){
@@ -65,7 +59,6 @@ var fetch = function(filter){
       console.log('Error fetching messages');
     }
   });
-  // debugger;
   clearTimeout(timer);
   timer = setInterval(function(){fetch(filter);}, 5000);
 };
@@ -92,17 +85,4 @@ var send = function(msg){
 
 var username = prompt("What is your username?");
 
-// create rooms for users to chat in
-/*
-  On click
-*/
-
-// friends
-/*
-filter by friends using bold text
-*/
-
-// var filter = null;
-// fetch(display);
-// // updateRooms();
 fetch();

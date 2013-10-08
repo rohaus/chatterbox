@@ -42,23 +42,14 @@
       $('select').on('change', function(e){
         e.preventDefault();
         e.stopPropagation();
-        // debugger;
         var room = $('select').val();
         fetch(room);
-        // var $first = $('.'+room);
-        // $('select').prepend($first);
-
-        //filter chat box to specified chat room
-        // fetch(display, $('select').val());
       });
       $('.roomSubmit').on('click', function(e){
         e.preventDefault();
         e.stopPropagation();
-        //add chat room to list
         var text = $('input.roomInput').val();
         fetch(text);
-        // $('select').append('<option>'+text+'</option');
-        // $('.roomInput').val("");
       })
     });
   </script>
