@@ -19,11 +19,15 @@ var filterMessages = function(className){
   $('.message').filter('.'+className).css({'display':'block'});
 };
 
-var updateRooms = function(){
+var updateRooms = function(roomName){
   $('select').text('');
   for(var room in rooms){
-    var option = '<option>'+room+'</option>';
-    $('select').append(option);
+    var option = '<option class="'+room+'">'+room+'</option>';
+    if (!(room === roomName)){
+      $('select').append(option);
+    }else{
+      $('select').prepend(option);
+    }
   }
 };
 
@@ -40,7 +44,7 @@ var display = function(messages, filter){
     list = '<li class="message ' + message.roomname +'">('+message.roomname+') '+message.username+": "+message.text+'</li>';
     $('.chatbox').append(list);
   }
-  updateRooms();
+  updateRooms(filter);
   filterMessages(filter);
 };
 
