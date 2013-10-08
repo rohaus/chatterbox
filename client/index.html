@@ -7,7 +7,7 @@
 
     <!-- external javascript -->
     <script src="bower_components/jquery/jquery.min.js"></script>
-    
+    <script src="bower_components/underscore/underscore-min.js"></script>
     <!-- internal javascript -->
     <script src="scripts/config.js"></script>
     <script src="scripts/app.js"></script>
@@ -16,7 +16,21 @@
 
     <div id="main">
       <h1>Chat-Client</h1>
+      <section class="chatbox"></section>
+      <form>
+        <input class="textBox" type="text"></input>
+        <button class="send">Send Message</button>
+      </form>
     </div>
+
+  <script>
+    $(document).ready(function(){
+      $('button').on('click', '.send', function(){
+        send($('input.textBox').text());
+        $('input.textBox').text("");
+      })
+    });
+  </script>
 
   </body>
 </html>
