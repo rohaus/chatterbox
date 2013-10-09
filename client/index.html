@@ -13,7 +13,15 @@
     <script src="scripts/app.js"></script>
   </head>
   <body>
-
+    <h>Lobby</h>
+    <nav class='right'>
+      <form>
+        <input class='roomInput' type='text'></input>
+        <button class='roomSubmit'>Submit Room</button>
+        <select></select>
+      </form>
+      <ul class="friends"></ul>
+    </nav>
     <div id="main">
       <h1>Chat-Client</h1>
       <section class="chatbox left"></section>
@@ -22,37 +30,40 @@
         <button class="send">Send Message</button>
       </form>
     </div>
-    <nav class='right'>
-      <form>
-        <input class='roomInput' type='text'></input>
-        <button class='roomSubmit'></button>
-        <select></select>
-      </form>
-    </nav>
-  <script>
-    $(document).ready(function(){
-      $('.send').on('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        var message = $('input.textBox').val();
-        send(message);
-        fetch($('select').val());
-        $('input.textBox').val("");
+
+    <script>
+      $(document).ready(function(){
+        fetch();
+        $('.send').on('click', function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          var message = $('input.textBox').val();
+          var room = $('select').val();
+          send(message, room);
+          fetch('roomname', room);
+          $('input.textBox').val("");
+        });
+        $('select').on('change', function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          var room = $('select').val();
+          fetch('roomname', room);
+          $('h').text(room);
+        });
+        $('.roomSubmit').on('click', function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          var room = $('input.roomInput').val();
+          fetch('roomname', room);
+          updateRoomList(room);
+          $('h').text(room);
+        });
+        $('body').on('click', 'li.friend', function(){
+          var className = $(this).text();
+          $("."+className).toggleClass('highlight');
+        });
       });
-      $('select').on('change', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        var room = $('select').val();
-        fetch(room);
-      });
-      $('.roomSubmit').on('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        var text = $('input.roomInput').val();
-        fetch(text);
-      })
-    });
-  </script>
+    </script>
 
   </body>
 </html>

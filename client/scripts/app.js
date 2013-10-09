@@ -1,6 +1,14 @@
+/*
+anytime we have an event we want to reset the interval?
+
+*/
+
 var url = 'https://api.parse.com/1/classes/chatterbox';
 var timer;
 var rooms = {};
+var users = {};
+var username = prompt("What is your username?");
+
 var secure = function(key){
   if (key === undefined || key === null){
     return undefined;
@@ -11,78 +19,88 @@ var secure = function(key){
             .replace('"', "&quot;")
             .replace("'", "&#x27;")
             .replace("/", "&#x2F;");
-}
-
-var updateRooms = function(roomName){
-  $('select').text('');
-  for(var room in rooms){
-    var option = '<option class="'+room+'">'+room+'</option>';
-    if (!(room === roomName)){
-      $('select').append(option);
-    }else{
-      $('select').prepend(option);
-    }
-  }
 };
 
-var display = function(messages, filter){
-  var list, option, results = messages.results;
+var display = function(messages){
+  var user, text, room, msg;
   $('.chatbox').text('');
-  for(var i = results.length-1 ; i >= results.length - 50; i--){
-    var message = results[i];
-    message.username = secure(message.username) || username;
-    message.roomname = secure(message.roomname) || 'lobby';
-    message.text = secure(message.text) || '';
-    rooms[message.roomname] = message.roomname;
-    list = '<li class="message ' + message.roomname +'">('+message.roomname+') '+message.username+": "+message.text+'</li>';
-    $('.chatbox').append(list);
-  }
-  updateRooms(filter);
-  $('.message').css({'display':'none'});
-  $('.message').filter('.'+filter).css({'display':'block'});
+  _(messages).each(function(message){
+    user = secure(message.username);
+    text = secure(message.text);
+    room = secure(message.roomname);
+    rooms[room] = room || 'lobby';
+    users[user] = user || 'anonymous';
+    msg = "<li class="+user+" "+room+">"+user+": "+text+"</class>";
+    $('.chatbox').append(msg);
+  });
+  updateRoomList($('select').val());
+  updateFriendList();
 };
 
-var fetch = function(filter){
+var fetch = function(property, value){
   $.ajax({
-    url: url,
-    type: 'GET',
+    url:url,
+    type:'GET',
     contentType: 'application/json',
-    data : {
-      limit: 50,
-      order: "-createdAt",
+    data: {
+      limit:50,
+      order:'-createdAt',
     },
-    success: function(messages){
-      console.log("Messages fetched");
-      display(messages, filter);
+    success:function(data){
+      console.log('Messages retrieved.');
+      filterMsgs(data, property, value);
     },
-    error: function(){
-      console.log('Error fetching messages');
+    error:function(){
+      console.log('Error in sending.');
     }
   });
   clearTimeout(timer);
-  timer = setInterval(function(){fetch(filter);}, 5000);
+  timer = setInterval(function(){fetch(property, value);}, 5000);
 };
 
-var send = function(msg){
+var filterMsgs = function(msgObj, property, value){
+  var messages = msgObj.results;
+  if(property){
+    messages = _.filter(messages, function(msg){
+      return msg[property] === value;
+    })
+  }
+  return display(messages);
+};
+
+var send = function(text, room){
   var message = {
-    'username': username,
-    'text': msg,
-    'roomname': $('select').val() || 'lobby'
+    username: username,
+    text: text,
+    roomname: room
   };
   $.ajax({
-  	url: url,
-  	type: 'POST',
-  	data: JSON.stringify(message),
+    url:url,
+    type:'POST',
+    data:JSON.stringify(message),
     contentType: 'application/json',
-  	success: function(data){
-  		console.log('Message Sent');
-  	},
-  	error: function(data){
-  		console.log('Error sending message');
-  	}
+    success:function(){
+      console.log('Message successfully sent.');
+    },
+    error:function(){
+      console.log('Error in sending.');
+    }
   });
 };
 
-var username = prompt("What is your username?");
+var updateRoomList = function(currentRoom){
+  currentRoom = currentRoom || 'lobby';
+  rooms[currentRoom] = currentRoom;
+  var sortedRooms = _(rooms).map(function(key){
+    var selected = (key === currentRoom) ? '" selected':'"';
+    return '<option class="'+key+selected+'>'+key+'</option>';
+  });
+  $('select').html(sortedRooms.join('\n'));
+};
 
-fetch();
+var updateFriendList = function(){
+  var friends = _(users).map(function(key){
+    return '<li class="friend '+key+'">'+key+'</li>';
+  });
+  $('ul.friends').html(friends.sort());
+};
